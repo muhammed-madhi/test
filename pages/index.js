@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useState, useMemo, useEffect } from 'react';
 
 const STAGES = ['PRIMARY','MIDDLE','HIGH','UNIVERSITY'];
@@ -74,28 +75,37 @@ export default function Home() {
   };
 
   return (
-    <div dir="rtl" lang="ar" style={styles.page}>
-      {/* الشعار من public/IMG_7618.jpeg */}
-      <img src="/IMG_7618.jpeg" alt="الشعار" style={styles.logo} />
+    <div dir="rtl" lang="ar" className="page">
+      {/* الشعار — من public/IMG_7618.jpeg */}
+      <div className="logoWrap">
+        <Image
+          src="/IMG_7618.jpeg"  // لو رفعت نسخة أوضح سَمّها /logo.png وغيّر هذا السطر
+          alt="الشعار"
+          width={88}
+          height={88}
+          priority
+          className="logo"
+        />
+      </div>
 
-      <main style={styles.card}>
-        <h1 style={styles.title}>حياكم الله!</h1>
+      <main className="card">
+        <h1 className="title">حياكم الله!</h1>
 
         <form onSubmit={submitForm}>
-          <label style={styles.label}>الاسم الثلاثي</label>
-          <input style={styles.input} type="text" value={fullName}
+          <label className="label">الاسم الثلاثي</label>
+          <input className="input" type="text" value={fullName}
                  onChange={(e)=>setFullName(e.target.value)} placeholder="مثال: محمد أحمد العبدالله" required/>
 
-          <label style={styles.label}>المرحلة العلمية</label>
-          <select style={styles.input} value={stage} onChange={(e)=>setStage(e.target.value)} required>
+          <label className="label">المرحلة العلمية</label>
+          <select className="input" value={stage} onChange={(e)=>setStage(e.target.value)} required>
             <option value="">اختر المرحلة</option>
             {STAGES.map(s => <option key={s} value={s}>{stageLabel[s]}</option>)}
           </select>
 
           {(stage && stage !== 'UNIVERSITY') && (
             <>
-              <label style={styles.label}>الصف</label>
-              <select style={styles.input} value={grade} onChange={(e)=>setGrade(e.target.value)} required>
+              <label className="label">الصف</label>
+              <select className="input" value={grade} onChange={(e)=>setGrade(e.target.value)} required>
                 <option value="">اختر الصف</option>
                 {allowedGrades.map(g => (
                   <option key={g} value={g}>
@@ -106,55 +116,93 @@ export default function Home() {
             </>
           )}
 
-          <label style={styles.label}>نوع الشهادة</label>
-          <select style={styles.input} value={ctype} onChange={(e)=>setCtype(e.target.value)} required disabled={!stage}>
+          <label className="label">نوع الشهادة</label>
+          <select className="input" value={ctype} onChange={(e)=>setCtype(e.target.value)} required disabled={!stage}>
             <option value="">{stage ? 'اختر نوع الشهادة' : 'اختر المرحلة أولاً'}</option>
-            {allowedTypes.map(t => <option key={t} value={t}>{typeLabel[t]}</option>)}
+            {(stage ? (stage==='UNIVERSITY'?CERT_UNI:CERT_SCHOOL) : []).map(t =>
+              <option key={t} value={t}>{typeLabel[t]}</option>
+            )}
           </select>
 
-          <label style={styles.label}>سنة التخرج</label>
-          <input style={styles.input} type="number" value={year}
+          <label className="label">سنة التخرج</label>
+          <input className="input" type="number" value={year}
                  onChange={(e)=>setYear(e.target.value)} placeholder="2023" required/>
 
-          <label style={styles.label}>رفع الملف (حتى 10MB — PDF/JPG/PNG)</label>
-          <input style={styles.file} type="file" accept=".pdf,.jpg,.jpeg,.png"
+          <label className="label">رفع الملف (حتى 10MB — PDF/JPG/PNG)</label>
+          <input className="file" type="file" accept=".pdf,.jpg,.jpeg,.png"
                  onChange={(e)=>setFile(e.target.files?.[0] || null)} required/>
 
-          <button type="submit" disabled={loading} style={styles.button}>
+          <button type="submit" disabled={loading} className="button">
             {loading ? 'جارٍ الإرسال…' : 'إرسال'}
           </button>
 
-          {msg?.err && <div style={styles.error}>{msg.err}</div>}
-          {msg?.ok &&  <div style={styles.success}>{msg.ok}</div>}
+          {msg?.err && <div className="error">{msg.err}</div>}
+          {msg?.ok &&  <div className="success">{msg.ok}</div>}
         </form>
       </main>
+
+      {/* —— Styles —— */}
+      <style jsx global>{`
+        :root{
+          --brand:#0A7E3B;
+          --brand-700:#075F2C;
+          --brand-50:#E8F3EC;
+          --text:#0F172A;
+          --muted:#6B7280;
+          --ring:#34D399;
+        }
+        body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; }
+      `}</style>
+
+      <style jsx>{`
+        .page{
+          min-height:100vh;
+          background:
+            radial-gradient(1200px 600px at 0% 0%, rgba(10,126,59,0.06), transparent 60%),
+            radial-gradient(1200px 600px at 100% 100%, rgba(10,126,59,0.05), transparent 60%),
+            var(--brand-50);
+          display:flex; align-items:center; justify-content:center;
+          padding:40px 12px;
+        }
+        .logoWrap{ position:fixed; top:16px; inset-inline-start:16px; }
+        .logo{
+          border-radius:10px; background:#fff; padding:6px;
+          box-shadow:0 6px 24px rgba(0,0,0,0.08);
+          object-fit:contain;
+        }
+        .card{
+          width:100%; max-width:560px; background:#fff; border-radius:16px;
+          box-shadow:0 20px 60px rgba(0,0,0,0.08);
+          padding:24px 20px;
+          border:1px solid rgba(16,185,129,0.10);
+        }
+        .title{
+          margin:8px 0 22px; text-align:center; font-size:30px;
+          font-weight:900; color:var(--text); letter-spacing:.3px;
+        }
+        .label{ display:block; margin:12px 0 6px; color:var(--text); font-weight:700; }
+        .input{
+          width:100%; padding:12px 14px; background:#fff;
+          border:1px solid #E5E7EB; border-radius:12px; font-size:16px;
+          transition:border .15s, box-shadow .15s;
+        }
+        .input:focus{
+          outline:none; border-color:var(--ring);
+          box-shadow:0 0 0 3px rgba(52,211,153,0.25);
+        }
+        .file{ width:100%; margin:8px 0 16px; }
+        .button{
+          width:100%; padding:13px 16px; border:none; border-radius:12px;
+          color:#fff; font-size:17px; font-weight:800; cursor:pointer;
+          background:linear-gradient(180deg, var(--brand) 0%, var(--brand-700) 100%);
+          box-shadow:0 10px 24px rgba(10,126,59,0.22);
+          transition:transform .08s ease, filter .12s ease;
+        }
+        .button:disabled{ opacity:.7; cursor:not-allowed; }
+        .button:not(:disabled):active{ transform:translateY(1px); filter:saturate(1.1); }
+        .error{ margin-top:12px; color:#b00020; font-weight:700; }
+        .success{ margin-top:12px; color:var(--brand-700); font-weight:800; }
+      `}</style>
     </div>
   );
 }
-
-const styles = {
-  page:{
-    minHeight:'100vh',
-    background:'#E8F3EC',
-    display:'flex', alignItems:'center', justifyContent:'center',
-    padding:'40px 12px', fontFamily:'system-ui, -apple-system, Segoe UI, Roboto, Arial'
-  },
-  logo:{ position:'fixed', top:16, insetInlineStart:16, height:48 },
-  card:{
-    width:'100%', maxWidth:540, background:'#fff', borderRadius:12,
-    boxShadow:'0 6px 24px rgba(0,0,0,0.06)', padding:20
-  },
-  title:{ margin:'8px 0 20px', textAlign:'center', fontSize:28, fontWeight:800, color:'#0F172A' },
-  label:{ display:'block', margin:'10px 0 6px', color:'#0F172A', fontWeight:600 },
-  input:{
-    width:'100%', padding:'10px 12px', border:'1px solid #E5E7EB', borderRadius:10, background:'#fff',
-    marginBottom:10, fontSize:16
-  },
-  file:{ width:'100%', margin:'6px 0 14px' },
-  button:{
-    width:'100%', padding:'12px 16px', background:'#0A7E3B', color:'#fff',
-    border:'none', borderRadius:10, fontSize:16, fontWeight:700, cursor:'pointer'
-  },
-  error:{ marginTop:12, color:'#b00020', fontWeight:600 },
-  success:{ marginTop:12, color:'#075F2C', fontWeight:700 }
-};
