@@ -71,12 +71,14 @@ export default function Home() {
   return (
     <div dir="rtl" lang="ar" className="page">
       <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* خط Tajawal */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
       </Head>
 
-      {/* الشعار من public/IMG_7618.jpeg */}
+      {/* الشعار ثابت من public/IMG_7618.jpeg */}
       <div className="logoWrap">
         <img src="/IMG_7618.jpeg" alt="الشعار" className="logo" />
       </div>
@@ -180,53 +182,64 @@ export default function Home() {
           display:flex; align-items:center; justify-content:center;
           padding:40px 12px;
         }
-        /* شعار ثابت */
+
+        /* شعار ثابت لا يتحرك */
         .logoWrap{
           position:fixed; top:12px; inset-inline-start:12px;
-          z-index:9999; transform:translateZ(0); will-change:transform; pointer-events:none;
+          z-index:9999; transform:translateZ(0);
+          will-change:transform; pointer-events:none;
         }
         .logo{
           width:68px; height:68px; object-fit:contain;
           border-radius:14px; background:#fff; padding:6px;
           box-shadow:0 8px 24px rgba(0,0,0,0.10), 0 0 0 1px rgba(16,185,129,0.10);
         }
+
         .card{
           width:100%; max-width:560px; background:#fff; border-radius:16px;
           box-shadow:0 20px 60px rgba(0,0,0,0.08);
           padding:24px 20px; border:1px solid rgba(16,185,129,0.10);
         }
-        .title{ margin:8px 0 22px; text-align:center; font-size:30px; font-weight:900; color:var(--text); }
+
+        .title{ margin:8px 0 20px; text-align:center; font-size:30px; font-weight:900; color:var(--text); }
+
         .label{ display:block; margin:6px 0 4px; color:var(--text); font-weight:800; }
         .label-inline{ margin:0; align-self:center; }
         .muted{ color:var(--muted); font-weight:600; }
 
-        /* مدخلات أنحف بشكل ملحوظ */
+        /* حقل رفيع مع حجم خط 16 لمنع تكبير سفاري */
         .input{
           width:100%;
-          font-size:16px;                 /* يمنع تكبير سفاري */
-          background:#fff; border:1px solid #E5E7EB; border-radius:10px;
+          font-size:16px;              /* يمنع iOS zoom */
+          background:#fff;
+          border:1px solid #E5E7EB; border-radius:10px;
           transition:border .15s, box-shadow .15s;
         }
         .input-slim{
-          height:38px;                    /* ارتفاع ثابت ورفيع */
+          height:36px;                 /* ~36–38px على الجوال */
           padding:6px 10px;
           line-height:1.15;
         }
-        select.input{ appearance:none; }  /* توحيد ارتفاع select */
+        select.input{ appearance:none; height:36px; padding:6px 10px; }
+
         .input:focus{
           outline:none; border-color:var(--ring);
           box-shadow:0 0 0 3px rgba(52,211,153,0.25);
         }
-        .file{ width:100%; margin:8px 0 16px; }
 
-        /* سنة التخرج أصغر وبعرض ثابت */
+        .file{ width:100%; margin:6px 0 14px; }
+
+        /* سنة التخرج أضيق وعلى صف واحد مع العنوان */
         .row{
           display:grid;
-          grid-template-columns: 1fr 110px;  /* عرض الحقل */
+          grid-template-columns: 1fr 110px;
           gap:10px; align-items:center; margin:8px 0 6px;
         }
+        @media (min-width: 768px){
+          .row{ grid-template-columns: 1fr 120px; }
+        }
         .input-year{
-          text-align:center;
+          text-align:center; letter-spacing:0.5px;
           -moz-appearance:textfield;
         }
         .input-year::-webkit-outer-spin-button,
@@ -247,7 +260,7 @@ export default function Home() {
 
         @media (max-width: 360px){
           .row{ grid-template-columns: 1fr 100px; }
-          .input-slim{ height:36px; }
+          .input-slim{ height:34px; }
           .logo{ width:62px; height:62px; }
         }
       `}</style>
