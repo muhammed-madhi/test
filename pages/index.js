@@ -79,10 +79,10 @@ export default function Home() {
       {/* الشعار — من public/IMG_7618.jpeg */}
       <div className="logoWrap">
         <Image
-          src="/IMG_7618.jpeg"  // لو رفعت نسخة أوضح سَمّها /logo.png وغيّر هذا السطر
+          src="/IMG_7618.jpeg"   // إن رفعت صورة أوضح باسم /logo.png غيّر هذا السطر
           alt="الشعار"
-          width={88}
-          height={88}
+          width={80}
+          height={80}
           priority
           className="logo"
         />
@@ -92,20 +92,30 @@ export default function Home() {
         <h1 className="title">حياكم الله!</h1>
 
         <form onSubmit={submitForm}>
+          {/* الاسم (أنحف) */}
           <label className="label">الاسم الثلاثي</label>
-          <input className="input" type="text" value={fullName}
-                 onChange={(e)=>setFullName(e.target.value)} placeholder="مثال: محمد أحمد العبدالله" required/>
+          <input
+            className="input input-sm"
+            type="text"
+            value={fullName}
+            onChange={(e)=>setFullName(e.target.value)}
+            placeholder="مثال: محمد أحمد العبدالله"
+            maxLength={60}
+            required
+          />
 
+          {/* المرحلة */}
           <label className="label">المرحلة العلمية</label>
-          <select className="input" value={stage} onChange={(e)=>setStage(e.target.value)} required>
+          <select className="input input-sm" value={stage} onChange={(e)=>setStage(e.target.value)} required>
             <option value="">اختر المرحلة</option>
             {STAGES.map(s => <option key={s} value={s}>{stageLabel[s]}</option>)}
           </select>
 
+          {/* الصف (يظهر فقط لغير الجامعة) */}
           {(stage && stage !== 'UNIVERSITY') && (
             <>
               <label className="label">الصف</label>
-              <select className="input" value={grade} onChange={(e)=>setGrade(e.target.value)} required>
+              <select className="input input-sm" value={grade} onChange={(e)=>setGrade(e.target.value)} required>
                 <option value="">اختر الصف</option>
                 {allowedGrades.map(g => (
                   <option key={g} value={g}>
@@ -116,19 +126,32 @@ export default function Home() {
             </>
           )}
 
+          {/* نوع الشهادة */}
           <label className="label">نوع الشهادة</label>
-          <select className="input" value={ctype} onChange={(e)=>setCtype(e.target.value)} required disabled={!stage}>
+          <select className="input input-sm" value={ctype} onChange={(e)=>setCtype(e.target.value)} required disabled={!stage}>
             <option value="">{stage ? 'اختر نوع الشهادة' : 'اختر المرحلة أولاً'}</option>
             {(stage ? (stage==='UNIVERSITY'?CERT_UNI:CERT_SCHOOL) : []).map(t =>
               <option key={t} value={t}>{typeLabel[t]}</option>
             )}
           </select>
 
-          <label className="label">سنة التخرج</label>
-          <input className="input" type="number" value={year}
-                 onChange={(e)=>setYear(e.target.value)} placeholder="2023" required/>
+          {/* سنة التخرج — في صف أنيق */}
+          <div className="row">
+            <label className="label label-inline">سنة التخرج</label>
+            <input
+              className="input input-sm input-year"
+              type="number"
+              inputMode="numeric"
+              min={2021}
+              value={year}
+              onChange={(e)=>setYear(e.target.value)}
+              placeholder="2023"
+              required
+            />
+          </div>
 
-          <label className="label">رفع الملف (حتى 10MB — PDF/JPG/PNG)</label>
+          {/* رفع الملف */}
+          <label className="label">رفع الملف <span className="muted">(حتى 10MB — PDF/JPG/PNG)</span></label>
           <input className="file" type="file" accept=".pdf,.jpg,.jpeg,.png"
                  onChange={(e)=>setFile(e.target.files?.[0] || null)} required/>
 
@@ -180,28 +203,54 @@ export default function Home() {
           margin:8px 0 22px; text-align:center; font-size:30px;
           font-weight:900; color:var(--text); letter-spacing:.3px;
         }
-        .label{ display:block; margin:12px 0 6px; color:var(--text); font-weight:700; }
+        .label{ display:block; margin:10px 0 6px; color:var(--text); font-weight:800; }
+        .label-inline{ margin:0; align-self:center; }
+        .muted{ color:var(--muted); font-weight:600; }
+
         .input{
           width:100%; padding:12px 14px; background:#fff;
           border:1px solid #E5E7EB; border-radius:12px; font-size:16px;
           transition:border .15s, box-shadow .15s;
         }
+        .input-sm{ padding:9px 12px; font-size:15px; border-radius:10px; }
         .input:focus{
           outline:none; border-color:var(--ring);
           box-shadow:0 0 0 3px rgba(52,211,153,0.25);
         }
         .file{ width:100%; margin:8px 0 16px; }
+
+        /* صف أنيق: "سنة التخرج" + الحقل يمين/يسار حسب RTL */
+        .row{
+          display:grid;
+          grid-template-columns: 1fr 130px; /* اللابل يأخذ المساحة، والسنة عرضها صغير */
+          gap:12px;
+          align-items:center;
+          margin:12px 0 8px;
+        }
+        .input-year{
+          width:100%;
+          text-align:center;
+        }
+        .input-year::-webkit-outer-spin-button,
+        .input-year::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+        .input-year{ -moz-appearance:textfield; }
+
         .button{
           width:100%; padding:13px 16px; border:none; border-radius:12px;
-          color:#fff; font-size:17px; font-weight:800; cursor:pointer;
+          color:#fff; font-size:17px; font-weight:900; cursor:pointer;
           background:linear-gradient(180deg, var(--brand) 0%, var(--brand-700) 100%);
           box-shadow:0 10px 24px rgba(10,126,59,0.22);
           transition:transform .08s ease, filter .12s ease;
         }
         .button:disabled{ opacity:.7; cursor:not-allowed; }
         .button:not(:disabled):active{ transform:translateY(1px); filter:saturate(1.1); }
-        .error{ margin-top:12px; color:#b00020; font-weight:700; }
-        .success{ margin-top:12px; color:var(--brand-700); font-weight:800; }
+
+        .error{ margin-top:12px; color:#b00020; font-weight:800; }
+        .success{ margin-top:12px; color:var(--brand-700); font-weight:900; }
+
+        @media (max-width: 360px){
+          .row{ grid-template-columns: 1fr 110px; }
+        }
       `}</style>
     </div>
   );
