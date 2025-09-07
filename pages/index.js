@@ -29,13 +29,8 @@ export default function Home() {
     return [];
   }, [stage]);
 
-  useEffect(() => {
-    if (ctype && !allowedTypes.includes(ctype)) setCtype('');
-  }, [ctype, allowedTypes]);
-
-  useEffect(() => {
-    if (stage === 'UNIVERSITY' && grade) setGrade('');
-  }, [stage, grade]);
+  useEffect(() => { if (ctype && !allowedTypes.includes(ctype)) setCtype(''); }, [ctype, allowedTypes]);
+  useEffect(() => { if (stage === 'UNIVERSITY' && grade) setGrade(''); }, [stage, grade]);
 
   const submitForm = async (e) => {
     e.preventDefault();
@@ -76,7 +71,6 @@ export default function Home() {
   return (
     <div dir="rtl" lang="ar" className="page">
       <Head>
-        {/* Tajawal (بدّله بـ IBM Plex إذا رغبت) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
@@ -93,7 +87,7 @@ export default function Home() {
         <form onSubmit={submitForm}>
           <label className="label">الاسم الثلاثي</label>
           <input
-            className="input input-compact"
+            className="input input-slim"
             type="text"
             value={fullName}
             onChange={(e)=>setFullName(e.target.value)}
@@ -103,7 +97,7 @@ export default function Home() {
           />
 
           <label className="label">المرحلة العلمية</label>
-          <select className="input input-compact" value={stage} onChange={(e)=>setStage(e.target.value)} required>
+          <select className="input input-slim" value={stage} onChange={(e)=>setStage(e.target.value)} required>
             <option value="">اختر المرحلة</option>
             {STAGES.map(s => <option key={s} value={s}>{stageLabel[s]}</option>)}
           </select>
@@ -111,7 +105,7 @@ export default function Home() {
           {(stage && stage !== 'UNIVERSITY') && (
             <>
               <label className="label">الصف</label>
-              <select className="input input-compact" value={grade} onChange={(e)=>setGrade(e.target.value)} required>
+              <select className="input input-slim" value={grade} onChange={(e)=>setGrade(e.target.value)} required>
                 <option value="">اختر الصف</option>
                 {allowedGrades.map(g => (
                   <option key={g} value={g}>
@@ -123,17 +117,18 @@ export default function Home() {
           )}
 
           <label className="label">نوع الشهادة</label>
-          <select className="input input-compact" value={ctype} onChange={(e)=>setCtype(e.target.value)} required disabled={!stage}>
+          <select className="input input-slim" value={ctype} onChange={(e)=>setCtype(e.target.value)} required disabled={!stage}>
             <option value="">{stage ? 'اختر نوع الشهادة' : 'اختر المرحلة أولاً'}</option>
             {(stage ? (stage==='UNIVERSITY'?CERT_UNI:CERT_SCHOOL) : []).map(t =>
               <option key={t} value={t}>{typeLabel[t]}</option>
             )}
           </select>
 
+          {/* سنة التخرج أصغر وعلى نفس السطر */}
           <div className="row">
             <label className="label label-inline">سنة التخرج</label>
             <input
-              className="input input-compact input-year"
+              className="input input-slim input-year"
               type="number"
               inputMode="numeric"
               min={2021}
@@ -185,7 +180,7 @@ export default function Home() {
           display:flex; align-items:center; justify-content:center;
           padding:40px 12px;
         }
-        /* شعار ثابت بدون اهتزاز */
+        /* شعار ثابت */
         .logoWrap{
           position:fixed; top:12px; inset-inline-start:12px;
           z-index:9999; transform:translateZ(0); will-change:transform; pointer-events:none;
@@ -201,32 +196,41 @@ export default function Home() {
           padding:24px 20px; border:1px solid rgba(16,185,129,0.10);
         }
         .title{ margin:8px 0 22px; text-align:center; font-size:30px; font-weight:900; color:var(--text); }
-        .label{ display:block; margin:8px 0 6px; color:var(--text); font-weight:800; }
+        .label{ display:block; margin:6px 0 4px; color:var(--text); font-weight:800; }
         .label-inline{ margin:0; align-self:center; }
         .muted{ color:var(--muted); font-weight:600; }
 
+        /* مدخلات أنحف بشكل ملحوظ */
         .input{
-          width:100%; padding:12px 14px;
-          background:#fff; border:1px solid #E5E7EB; border-radius:12px; font-size:16px;
+          width:100%;
+          font-size:16px;                 /* يمنع تكبير سفاري */
+          background:#fff; border:1px solid #E5E7EB; border-radius:10px;
           transition:border .15s, box-shadow .15s;
         }
-        .input-compact{ padding:8px 12px; font-size:15px; border-radius:10px; }
+        .input-slim{
+          height:38px;                    /* ارتفاع ثابت ورفيع */
+          padding:6px 10px;
+          line-height:1.15;
+        }
+        select.input{ appearance:none; }  /* توحيد ارتفاع select */
         .input:focus{
           outline:none; border-color:var(--ring);
           box-shadow:0 0 0 3px rgba(52,211,153,0.25);
         }
         .file{ width:100%; margin:8px 0 16px; }
 
-        /* سنة التخرج على نفس السطر وبعرض صغير */
+        /* سنة التخرج أصغر وبعرض ثابت */
         .row{
           display:grid;
-          grid-template-columns: 1fr 120px;
-          gap:12px; align-items:center; margin:10px 0 8px;
+          grid-template-columns: 1fr 110px;  /* عرض الحقل */
+          gap:10px; align-items:center; margin:8px 0 6px;
         }
-        .input-year{ text-align:center; }
+        .input-year{
+          text-align:center;
+          -moz-appearance:textfield;
+        }
         .input-year::-webkit-outer-spin-button,
         .input-year::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
-        .input-year{ -moz-appearance:textfield; }
 
         .button{
           width:100%; padding:12px 16px; border:none; border-radius:12px;
@@ -238,11 +242,12 @@ export default function Home() {
         .button:disabled{ opacity:.7; cursor:not-allowed; }
         .button:not(:disabled):active{ transform:translateY(1px); filter:saturate(1.1); }
 
-        .error{ margin-top:12px; color:#b00020; font-weight:800; }
-        .success{ margin-top:12px; color:var(--brand-700); font-weight:900; }
+        .error{ margin-top:10px; color:#b00020; font-weight:800; }
+        .success{ margin-top:10px; color:var(--brand-700); font-weight:900; }
 
         @media (max-width: 360px){
-          .row{ grid-template-columns: 1fr 108px; }
+          .row{ grid-template-columns: 1fr 100px; }
+          .input-slim{ height:36px; }
           .logo{ width:62px; height:62px; }
         }
       `}</style>
