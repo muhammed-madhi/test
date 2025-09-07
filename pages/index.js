@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { useState, useMemo, useEffect } from 'react';
 
 const STAGES = ['PRIMARY','MIDDLE','HIGH','UNIVERSITY'];
@@ -29,7 +28,6 @@ export default function Home() {
     return [];
   }, [stage]);
 
-  // لا نغيّر state داخل render
   useEffect(() => {
     if (ctype && !allowedTypes.includes(ctype)) setCtype('');
   }, [ctype, allowedTypes]);
@@ -76,23 +74,15 @@ export default function Home() {
 
   return (
     <div dir="rtl" lang="ar" className="page">
-      {/* الشعار — من public/IMG_7618.jpeg */}
+      {/* الشعار من public/IMG_7618.jpeg */}
       <div className="logoWrap">
-        <Image
-          src="/IMG_7618.jpeg"   // إن رفعت صورة أوضح باسم /logo.png غيّر هذا السطر
-          alt="الشعار"
-          width={80}
-          height={80}
-          priority
-          className="logo"
-        />
+        <img src="/IMG_7618.jpeg" alt="الشعار" className="logo" />
       </div>
 
       <main className="card">
         <h1 className="title">حياكم الله!</h1>
 
         <form onSubmit={submitForm}>
-          {/* الاسم (أنحف) */}
           <label className="label">الاسم الثلاثي</label>
           <input
             className="input input-sm"
@@ -104,14 +94,12 @@ export default function Home() {
             required
           />
 
-          {/* المرحلة */}
           <label className="label">المرحلة العلمية</label>
           <select className="input input-sm" value={stage} onChange={(e)=>setStage(e.target.value)} required>
             <option value="">اختر المرحلة</option>
             {STAGES.map(s => <option key={s} value={s}>{stageLabel[s]}</option>)}
           </select>
 
-          {/* الصف (يظهر فقط لغير الجامعة) */}
           {(stage && stage !== 'UNIVERSITY') && (
             <>
               <label className="label">الصف</label>
@@ -126,7 +114,6 @@ export default function Home() {
             </>
           )}
 
-          {/* نوع الشهادة */}
           <label className="label">نوع الشهادة</label>
           <select className="input input-sm" value={ctype} onChange={(e)=>setCtype(e.target.value)} required disabled={!stage}>
             <option value="">{stage ? 'اختر نوع الشهادة' : 'اختر المرحلة أولاً'}</option>
@@ -135,7 +122,6 @@ export default function Home() {
             )}
           </select>
 
-          {/* سنة التخرج — في صف أنيق */}
           <div className="row">
             <label className="label label-inline">سنة التخرج</label>
             <input
@@ -150,7 +136,6 @@ export default function Home() {
             />
           </div>
 
-          {/* رفع الملف */}
           <label className="label">رفع الملف <span className="muted">(حتى 10MB — PDF/JPG/PNG)</span></label>
           <input className="file" type="file" accept=".pdf,.jpg,.jpeg,.png"
                  onChange={(e)=>setFile(e.target.files?.[0] || null)} required/>
@@ -164,7 +149,6 @@ export default function Home() {
         </form>
       </main>
 
-      {/* —— Styles —— */}
       <style jsx global>{`
         :root{
           --brand:#0A7E3B;
@@ -189,20 +173,16 @@ export default function Home() {
         }
         .logoWrap{ position:fixed; top:16px; inset-inline-start:16px; }
         .logo{
+          width:80px; height:80px; object-fit:contain;
           border-radius:10px; background:#fff; padding:6px;
           box-shadow:0 6px 24px rgba(0,0,0,0.08);
-          object-fit:contain;
         }
         .card{
           width:100%; max-width:560px; background:#fff; border-radius:16px;
           box-shadow:0 20px 60px rgba(0,0,0,0.08);
-          padding:24px 20px;
-          border:1px solid rgba(16,185,129,0.10);
+          padding:24px 20px; border:1px solid rgba(16,185,129,0.10);
         }
-        .title{
-          margin:8px 0 22px; text-align:center; font-size:30px;
-          font-weight:900; color:var(--text); letter-spacing:.3px;
-        }
+        .title{ margin:8px 0 22px; text-align:center; font-size:30px; font-weight:900; color:var(--text); }
         .label{ display:block; margin:10px 0 6px; color:var(--text); font-weight:800; }
         .label-inline{ margin:0; align-self:center; }
         .muted{ color:var(--muted); font-weight:600; }
@@ -219,18 +199,12 @@ export default function Home() {
         }
         .file{ width:100%; margin:8px 0 16px; }
 
-        /* صف أنيق: "سنة التخرج" + الحقل يمين/يسار حسب RTL */
         .row{
           display:grid;
-          grid-template-columns: 1fr 130px; /* اللابل يأخذ المساحة، والسنة عرضها صغير */
-          gap:12px;
-          align-items:center;
-          margin:12px 0 8px;
+          grid-template-columns: 1fr 130px;
+          gap:12px; align-items:center; margin:12px 0 8px;
         }
-        .input-year{
-          width:100%;
-          text-align:center;
-        }
+        .input-year{ text-align:center; }
         .input-year::-webkit-outer-spin-button,
         .input-year::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
         .input-year{ -moz-appearance:textfield; }
