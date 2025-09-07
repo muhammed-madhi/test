@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 const STAGES = ['PRIMARY','MIDDLE','HIGH','UNIVERSITY'];
 const CERT_SCHOOL = ['PRIMARY','MIDDLE','HIGH'];
@@ -23,25 +23,24 @@ export default function Home() {
   }, [stage]);
 
   const allowedGrades = useMemo(() => {
-    if (stage === 'PRIMARY') return Array.from({length:6}, (_,i)=>i+1);
+    if (stage === 'PRIMARY') return [1,2,3,4,5,6];
     if (stage === 'MIDDLE' || stage === 'HIGH') return [1,2,3];
     return [];
   }, [stage]);
 
-  // إذا النوع الحالي صار غير صالح بعد تغيير المرحلة → صفّره
-  if (ctype && !allowedTypes.includes(ctype)) {
-    setCtype('');
-  }
-  // إذا المرحلة جامعة والدرجة موجودة → صفّره
-  if (stage === 'UNIVERSITY' && grade) {
-    setGrade('');
-  }
+  // ✅ لا تعدّل state داخل render — استخدم useEffect
+  useEffect(() => {
+    if (ctype && !allowedTypes.includes(ctype)) setCtype('');
+  }, [ctype, allowedTypes]);
+
+  useEffect(() => {
+    if (stage === 'UNIVERSITY' && grade) setGrade('');
+  }, [stage, grade]);
 
   const submitForm = async (e) => {
     e.preventDefault();
     setMsg(null);
 
-    // تحققات أساسية (مطابقة للمتطلبات)
     const words = fullName.trim().split(/\s+/).filter(Boolean);
     if (words.length < 3) return setMsg({err:'الاسم يجب أن يكون ثلاثيًا على الأقل.'});
     if (!stage) return setMsg({err:'اختر المرحلة.'});
@@ -76,10 +75,14 @@ export default function Home() {
 
   return (
     <div dir="rtl" lang="ar" style={styles.page}>
-      {/* الشعار (من public/logo.png) في زاوية البداية */}
-    <img src="/logo.png" alt="الشعار" style={{position:'fixed', top:16, insetInlineStart:16, height:48}} />
+      {/* شعار مع fallback لاسم الملف الحالي */}
+      <img
+        src="/logo.png"
+        alt="الشعار"
+        style={styles.logo}
+        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/IMG_7618.jpeg'; }}
+      />
 
-      {/* الحاوية بالنص */}
       <main style={styles.card}>
         <h1 style={styles.title}>حياكم الله!</h1>
 
@@ -137,7 +140,7 @@ export default function Home() {
 const styles = {
   page:{
     minHeight:'100vh',
-    background:'#E8F3EC', /* brand tint */
+    background:'#E8F3EC',
     display:'flex', alignItems:'center', justifyContent:'center',
     padding:'40px 12px', fontFamily:'system-ui, -apple-system, Segoe UI, Roboto, Arial'
   },
