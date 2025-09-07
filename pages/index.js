@@ -76,12 +76,7 @@ export default function Home() {
   return (
     <div dir="rtl" lang="ar" style={styles.page}>
       {/* شعار مع fallback لاسم الملف الحالي */}
-      <img
-        src="/logo.png"
-        alt="الشعار"
-        style={styles.logo}
-        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/IMG_7618.jpeg'; }}
-      />
+      <img src="/IMG_7618.jpeg" alt="الشعار" style={styles.logo} />
 
       <main style={styles.card}>
         <h1 style={styles.title}>حياكم الله!</h1>
