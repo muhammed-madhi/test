@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { useState, useMemo, useEffect } from 'react';
 
 const STAGES = ['PRIMARY','MIDDLE','HIGH','UNIVERSITY'];
@@ -74,6 +75,13 @@ export default function Home() {
 
   return (
     <div dir="rtl" lang="ar" className="page">
+      <Head>
+        {/* Tajawal (بدّله بـ IBM Plex إذا رغبت) */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+      </Head>
+
       {/* الشعار من public/IMG_7618.jpeg */}
       <div className="logoWrap">
         <img src="/IMG_7618.jpeg" alt="الشعار" className="logo" />
@@ -85,7 +93,7 @@ export default function Home() {
         <form onSubmit={submitForm}>
           <label className="label">الاسم الثلاثي</label>
           <input
-            className="input input-sm"
+            className="input input-compact"
             type="text"
             value={fullName}
             onChange={(e)=>setFullName(e.target.value)}
@@ -95,7 +103,7 @@ export default function Home() {
           />
 
           <label className="label">المرحلة العلمية</label>
-          <select className="input input-sm" value={stage} onChange={(e)=>setStage(e.target.value)} required>
+          <select className="input input-compact" value={stage} onChange={(e)=>setStage(e.target.value)} required>
             <option value="">اختر المرحلة</option>
             {STAGES.map(s => <option key={s} value={s}>{stageLabel[s]}</option>)}
           </select>
@@ -103,7 +111,7 @@ export default function Home() {
           {(stage && stage !== 'UNIVERSITY') && (
             <>
               <label className="label">الصف</label>
-              <select className="input input-sm" value={grade} onChange={(e)=>setGrade(e.target.value)} required>
+              <select className="input input-compact" value={grade} onChange={(e)=>setGrade(e.target.value)} required>
                 <option value="">اختر الصف</option>
                 {allowedGrades.map(g => (
                   <option key={g} value={g}>
@@ -115,7 +123,7 @@ export default function Home() {
           )}
 
           <label className="label">نوع الشهادة</label>
-          <select className="input input-sm" value={ctype} onChange={(e)=>setCtype(e.target.value)} required disabled={!stage}>
+          <select className="input input-compact" value={ctype} onChange={(e)=>setCtype(e.target.value)} required disabled={!stage}>
             <option value="">{stage ? 'اختر نوع الشهادة' : 'اختر المرحلة أولاً'}</option>
             {(stage ? (stage==='UNIVERSITY'?CERT_UNI:CERT_SCHOOL) : []).map(t =>
               <option key={t} value={t}>{typeLabel[t]}</option>
@@ -125,7 +133,7 @@ export default function Home() {
           <div className="row">
             <label className="label label-inline">سنة التخرج</label>
             <input
-              className="input input-sm input-year"
+              className="input input-compact input-year"
               type="number"
               inputMode="numeric"
               min={2021}
@@ -149,6 +157,7 @@ export default function Home() {
         </form>
       </main>
 
+      {/* Global */}
       <style jsx global>{`
         :root{
           --brand:#0A7E3B;
@@ -158,9 +167,14 @@ export default function Home() {
           --muted:#6B7280;
           --ring:#34D399;
         }
-        body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; }
+        body{
+          margin:0;
+          font-family:'Tajawal', system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans Arabic", sans-serif;
+          -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+        }
       `}</style>
 
+      {/* Component */}
       <style jsx>{`
         .page{
           min-height:100vh;
@@ -171,11 +185,15 @@ export default function Home() {
           display:flex; align-items:center; justify-content:center;
           padding:40px 12px;
         }
-        .logoWrap{ position:fixed; top:16px; inset-inline-start:16px; }
+        /* شعار ثابت بدون اهتزاز */
+        .logoWrap{
+          position:fixed; top:12px; inset-inline-start:12px;
+          z-index:9999; transform:translateZ(0); will-change:transform; pointer-events:none;
+        }
         .logo{
-          width:80px; height:80px; object-fit:contain;
-          border-radius:10px; background:#fff; padding:6px;
-          box-shadow:0 6px 24px rgba(0,0,0,0.08);
+          width:68px; height:68px; object-fit:contain;
+          border-radius:14px; background:#fff; padding:6px;
+          box-shadow:0 8px 24px rgba(0,0,0,0.10), 0 0 0 1px rgba(16,185,129,0.10);
         }
         .card{
           width:100%; max-width:560px; background:#fff; border-radius:16px;
@@ -183,26 +201,27 @@ export default function Home() {
           padding:24px 20px; border:1px solid rgba(16,185,129,0.10);
         }
         .title{ margin:8px 0 22px; text-align:center; font-size:30px; font-weight:900; color:var(--text); }
-        .label{ display:block; margin:10px 0 6px; color:var(--text); font-weight:800; }
+        .label{ display:block; margin:8px 0 6px; color:var(--text); font-weight:800; }
         .label-inline{ margin:0; align-self:center; }
         .muted{ color:var(--muted); font-weight:600; }
 
         .input{
-          width:100%; padding:12px 14px; background:#fff;
-          border:1px solid #E5E7EB; border-radius:12px; font-size:16px;
+          width:100%; padding:12px 14px;
+          background:#fff; border:1px solid #E5E7EB; border-radius:12px; font-size:16px;
           transition:border .15s, box-shadow .15s;
         }
-        .input-sm{ padding:9px 12px; font-size:15px; border-radius:10px; }
+        .input-compact{ padding:8px 12px; font-size:15px; border-radius:10px; }
         .input:focus{
           outline:none; border-color:var(--ring);
           box-shadow:0 0 0 3px rgba(52,211,153,0.25);
         }
         .file{ width:100%; margin:8px 0 16px; }
 
+        /* سنة التخرج على نفس السطر وبعرض صغير */
         .row{
           display:grid;
-          grid-template-columns: 1fr 130px;
-          gap:12px; align-items:center; margin:12px 0 8px;
+          grid-template-columns: 1fr 120px;
+          gap:12px; align-items:center; margin:10px 0 8px;
         }
         .input-year{ text-align:center; }
         .input-year::-webkit-outer-spin-button,
@@ -210,7 +229,7 @@ export default function Home() {
         .input-year{ -moz-appearance:textfield; }
 
         .button{
-          width:100%; padding:13px 16px; border:none; border-radius:12px;
+          width:100%; padding:12px 16px; border:none; border-radius:12px;
           color:#fff; font-size:17px; font-weight:900; cursor:pointer;
           background:linear-gradient(180deg, var(--brand) 0%, var(--brand-700) 100%);
           box-shadow:0 10px 24px rgba(10,126,59,0.22);
@@ -223,7 +242,8 @@ export default function Home() {
         .success{ margin-top:12px; color:var(--brand-700); font-weight:900; }
 
         @media (max-width: 360px){
-          .row{ grid-template-columns: 1fr 110px; }
+          .row{ grid-template-columns: 1fr 108px; }
+          .logo{ width:62px; height:62px; }
         }
       `}</style>
     </div>
