@@ -77,7 +77,7 @@ export default function Home() {
   return (
     <div dir="rtl" lang="ar" style={styles.page}>
       {/* الشعار (من public/logo.png) في زاوية البداية */}
-      <img src="/logo.png" alt="الشعار" style={styles.logo} />
+    <img src="/logo.png" alt="الشعار" style={{position:'fixed', top:16, insetInlineStart:16, height:48}} />
 
       {/* الحاوية بالنص */}
       <main style={styles.card}>
