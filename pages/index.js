@@ -28,7 +28,7 @@ export default function Home() {
     return [];
   }, [stage]);
 
-  // ✅ لا تعدّل state داخل render — استخدم useEffect
+  // لا نغيّر state داخل render
   useEffect(() => {
     if (ctype && !allowedTypes.includes(ctype)) setCtype('');
   }, [ctype, allowedTypes]);
@@ -75,7 +75,7 @@ export default function Home() {
 
   return (
     <div dir="rtl" lang="ar" style={styles.page}>
-      {/* شعار مع fallback لاسم الملف الحالي */}
+      {/* الشعار من public/IMG_7618.jpeg */}
       <img src="/IMG_7618.jpeg" alt="الشعار" style={styles.logo} />
 
       <main style={styles.card}>
