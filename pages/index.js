@@ -18,11 +18,7 @@ export default function Home() {
   const [msg, setMsg] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const allowedTypes = useMemo(() => {
-    if (!stage) return [];
-    return stage === 'UNIVERSITY' ? CERT_UNI : CERT_SCHOOL;
-  }, [stage]);
-
+  const allowedTypes = useMemo(() => !stage ? [] : (stage === 'UNIVERSITY' ? CERT_UNI : CERT_SCHOOL), [stage]);
   const allowedGrades = useMemo(() => {
     if (stage === 'PRIMARY') return [1,2,3,4,5,6];
     if (stage === 'MIDDLE' || stage === 'HIGH') return [1,2,3];
@@ -61,6 +57,8 @@ export default function Home() {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.message || 'تعذّر الإرسال');
       setMsg({ok:`تم الحفظ ✅ — المعرّف: ${data.id}`});
+      // reset
+      setFullName(''); setStage(''); setGrade(''); setCtype(''); setYear(''); setFile(null);
     } catch (err) {
       setMsg({err: err.message || 'خطأ غير متوقع'});
     } finally {
@@ -72,13 +70,11 @@ export default function Home() {
     <div dir="rtl" lang="ar" className="page">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {/* خط Tajawal */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
       </Head>
 
-      {/* الشعار ثابت من public/IMG_7618.jpeg */}
       <div className="logoWrap">
         <img src="/IMG_7618.jpeg" alt="الشعار" className="logo" />
       </div>
@@ -86,28 +82,32 @@ export default function Home() {
       <main className="card">
         <h1 className="title">حياكم الله!</h1>
 
-        <form onSubmit={submitForm}>
-          <label className="label">الاسم الثلاثي</label>
-          <input
-            className="input input-slim"
-            type="text"
-            value={fullName}
-            onChange={(e)=>setFullName(e.target.value)}
-            placeholder="مثال: محمد أحمد العبدالله"
-            maxLength={60}
-            required
-          />
+        <form onSubmit={submitForm} className="form">
+          <div className="field">
+            <label className="label">الاسم الثلاثي</label>
+            <input
+              className="control"
+              type="text"
+              value={fullName}
+              onChange={(e)=>setFullName(e.target.value)}
+              placeholder="مثال: محمد أحمد العبدالله"
+              maxLength={60}
+              required
+            />
+          </div>
 
-          <label className="label">المرحلة العلمية</label>
-          <select className="input input-slim" value={stage} onChange={(e)=>setStage(e.target.value)} required>
-            <option value="">اختر المرحلة</option>
-            {STAGES.map(s => <option key={s} value={s}>{stageLabel[s]}</option>)}
-          </select>
+          <div className="field">
+            <label className="label">المرحلة العلمية</label>
+            <select className="control" value={stage} onChange={(e)=>setStage(e.target.value)} required>
+              <option value="">اختر المرحلة</option>
+              {STAGES.map(s => <option key={s} value={s}>{stageLabel[s]}</option>)}
+            </select>
+          </div>
 
-          {(stage && stage !== 'UNIVERSITY') && (
-            <>
+          {stage && stage !== 'UNIVERSITY' && (
+            <div className="field">
               <label className="label">الصف</label>
-              <select className="input input-slim" value={grade} onChange={(e)=>setGrade(e.target.value)} required>
+              <select className="control" value={grade} onChange={(e)=>setGrade(e.target.value)} required>
                 <option value="">اختر الصف</option>
                 {allowedGrades.map(g => (
                   <option key={g} value={g}>
@@ -115,22 +115,23 @@ export default function Home() {
                   </option>
                 ))}
               </select>
-            </>
+            </div>
           )}
 
-          <label className="label">نوع الشهادة</label>
-          <select className="input input-slim" value={ctype} onChange={(e)=>setCtype(e.target.value)} required disabled={!stage}>
-            <option value="">{stage ? 'اختر نوع الشهادة' : 'اختر المرحلة أولاً'}</option>
-            {(stage ? (stage==='UNIVERSITY'?CERT_UNI:CERT_SCHOOL) : []).map(t =>
-              <option key={t} value={t}>{typeLabel[t]}</option>
-            )}
-          </select>
+          <div className="field">
+            <label className="label">نوع الشهادة</label>
+            <select className="control" value={ctype} onChange={(e)=>setCtype(e.target.value)} required disabled={!stage}>
+              <option value="">{stage ? 'اختر نوع الشهادة' : 'اختر المرحلة أولاً'}</option>
+              {(stage ? (stage==='UNIVERSITY'?CERT_UNI:CERT_SCHOOL) : []).map(t =>
+                <option key={t} value={t}>{typeLabel[t]}</option>
+              )}
+            </select>
+          </div>
 
-          {/* سنة التخرج أصغر وعلى نفس السطر */}
           <div className="row">
             <label className="label label-inline">سنة التخرج</label>
             <input
-              className="input input-slim input-year"
+              className="control control-year"
               type="number"
               inputMode="numeric"
               min={2021}
@@ -141,127 +142,95 @@ export default function Home() {
             />
           </div>
 
-          <label className="label">رفع الملف <span className="muted">(حتى 10MB — PDF/JPG/PNG)</span></label>
-          <input className="file" type="file" accept=".pdf,.jpg,.jpeg,.png"
-                 onChange={(e)=>setFile(e.target.files?.[0] || null)} required/>
+          <div className="field">
+            <label className="label">رفع الملف <span className="muted">(حتى 10MB — PDF/JPG/PNG)</span></label>
+            <input className="file" type="file" accept=".pdf,.jpg,.jpeg,.png"
+                   onChange={(e)=>setFile(e.target.files?.[0] || null)} required/>
+          </div>
 
           <button type="submit" disabled={loading} className="button">
             {loading ? 'جارٍ الإرسال…' : 'إرسال'}
           </button>
 
-          {msg?.err && <div className="error">{msg.err}</div>}
-          {msg?.ok &&  <div className="success">{msg.ok}</div>}
+          {msg?.err && <div className="alert error">{msg.err}</div>}
+          {msg?.ok &&  <div className="alert success">{msg.ok}</div>}
         </form>
       </main>
 
       {/* Global */}
       <style jsx global>{`
         :root{
-          --brand:#0A7E3B;
-          --brand-700:#075F2C;
-          --brand-50:#E8F3EC;
-          --text:#0F172A;
-          --muted:#6B7280;
-          --ring:#34D399;
+          --brand:#0A7E3B; --brand-700:#075F2C; --brand-50:#EAF6EF;
+          --text:#0F172A; --muted:#6B7280; --ring:#34D399;
+          --input-bg:#F5FAF7; --input-border:#DDE7E1; --input-shadow:rgba(10,126,59,.06);
         }
-        body{
-          margin:0;
-          font-family:'Tajawal', system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans Arabic", sans-serif;
-          -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-        }
+        body{ margin:0; font-family:'Tajawal', system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans Arabic", sans-serif; }
       `}</style>
 
       {/* Component */}
       <style jsx>{`
         .page{
           min-height:100vh;
-          background:
-            radial-gradient(1200px 600px at 0% 0%, rgba(10,126,59,0.06), transparent 60%),
-            radial-gradient(1200px 600px at 100% 100%, rgba(10,126,59,0.05), transparent 60%),
-            var(--brand-50);
-          display:flex; align-items:center; justify-content:center;
-          padding:40px 12px;
+          background: radial-gradient(1000px 600px at 0% 0%, rgba(10,126,59,.05), transparent 65%),
+                      radial-gradient(1000px 600px at 100% 100%, rgba(10,126,59,.04), transparent 65%),
+                      var(--brand-50);
+          display:flex; align-items:center; justify-content:center; padding:40px 12px;
         }
-
-        /* شعار ثابت لا يتحرك */
-        .logoWrap{
-          position:fixed; top:12px; inset-inline-start:12px;
-          z-index:9999; transform:translateZ(0);
-          will-change:transform; pointer-events:none;
-        }
-        .logo{
-          width:68px; height:68px; object-fit:contain;
-          border-radius:14px; background:#fff; padding:6px;
-          box-shadow:0 8px 24px rgba(0,0,0,0.10), 0 0 0 1px rgba(16,185,129,0.10);
-        }
-
+        .logoWrap{ position:fixed; top:12px; inset-inline-start:12px; z-index:9; transform:translateZ(0); pointer-events:none; }
+        .logo{ width:68px; height:68px; object-fit:contain; border-radius:16px; background:#fff; padding:6px;
+               box-shadow:0 12px 28px rgba(0,0,0,.08); }
         .card{
-          width:100%; max-width:560px; background:#fff; border-radius:16px;
-          box-shadow:0 20px 60px rgba(0,0,0,0.08);
-          padding:24px 20px; border:1px solid rgba(16,185,129,0.10);
+          width:100%; max-width:560px; background:#fff; border-radius:20px;
+          box-shadow:0 30px 70px rgba(0,0,0,.08);
+          padding:26px 22px; border:1px solid rgba(16,185,129,.10);
         }
+        .title{ margin:6px 0 18px; text-align:center; font-size:30px; font-weight:900; color:var(--text); letter-spacing:.2px; }
 
-        .title{ margin:8px 0 20px; text-align:center; font-size:30px; font-weight:900; color:var(--text); }
-
-        .label{ display:block; margin:6px 0 4px; color:var(--text); font-weight:800; }
-        .label-inline{ margin:0; align-self:center; }
+        .form{ display:grid; gap:12px; }
+        .field{ display:grid; gap:6px; }
+        .label{ color:var(--text); font-weight:800; }
+        .label-inline{ align-self:center; margin:0; }
         .muted{ color:var(--muted); font-weight:600; }
 
-        /* حقل رفيع مع حجم خط 16 لمنع تكبير سفاري */
-        .input{
-          width:100%;
-          font-size:16px;              /* يمنع iOS zoom */
-          background:#fff;
-          border:1px solid #E5E7EB; border-radius:10px;
-          transition:border .15s, box-shadow .15s;
+        .control{
+          width:100%; font-size:16px; height:44px; /* أنيق وواضح */
+          background:var(--input-bg);
+          border:1px solid var(--input-border);
+          border-radius:16px;
+          padding:10px 14px;
+          box-shadow:inset 0 1px 0 #fff, 0 1px 2px var(--input-shadow);
+          transition:border .15s, box-shadow .15s, background .15s;
         }
-        .input-slim{
-          height:36px;                 /* ~36–38px على الجوال */
-          padding:6px 10px;
-          line-height:1.15;
-        }
-        select.input{ appearance:none; height:36px; padding:6px 10px; }
-
-        .input:focus{
+        select.control{ appearance:none; }
+        .control:focus{
           outline:none; border-color:var(--ring);
-          box-shadow:0 0 0 3px rgba(52,211,153,0.25);
+          box-shadow:0 0 0 4px rgba(52,211,153,.22), inset 0 1px 0 #fff, 0 1px 2px var(--input-shadow);
+          background:#fff;
         }
 
-        .file{ width:100%; margin:6px 0 14px; }
+        .row{ display:grid; grid-template-columns: 1fr 120px; gap:10px; align-items:center; }
+        .control-year{ text-align:center; letter-spacing:.5px; }
 
-        /* سنة التخرج أضيق وعلى صف واحد مع العنوان */
-        .row{
-          display:grid;
-          grid-template-columns: 1fr 110px;
-          gap:10px; align-items:center; margin:8px 0 6px;
-        }
-        @media (min-width: 768px){
-          .row{ grid-template-columns: 1fr 120px; }
-        }
-        .input-year{
-          text-align:center; letter-spacing:0.5px;
-          -moz-appearance:textfield;
-        }
-        .input-year::-webkit-outer-spin-button,
-        .input-year::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+        .file{ width:100%; }
 
         .button{
-          width:100%; padding:12px 16px; border:none; border-radius:12px;
-          color:#fff; font-size:17px; font-weight:900; cursor:pointer;
+          width:100%; height:48px; border:none; border-radius:14px; color:#fff;
+          font-size:17px; font-weight:900; cursor:pointer;
           background:linear-gradient(180deg, var(--brand) 0%, var(--brand-700) 100%);
-          box-shadow:0 10px 24px rgba(10,126,59,0.22);
+          box-shadow:0 12px 28px rgba(10,126,59,.22);
           transition:transform .08s ease, filter .12s ease;
         }
         .button:disabled{ opacity:.7; cursor:not-allowed; }
-        .button:not(:disabled):active{ transform:translateY(1px); filter:saturate(1.1); }
+        .button:not(:disabled):active{ transform:translateY(1px); filter:saturate(1.08); }
 
-        .error{ margin-top:10px; color:#b00020; font-weight:800; }
-        .success{ margin-top:10px; color:var(--brand-700); font-weight:900; }
+        .alert{ margin-top:10px; padding:10px 12px; border-radius:12px; font-weight:800; }
+        .error{ color:#B00020; background:#FDECEE; border:1px solid #F9C8CE; }
+        .success{ color:var(--brand-700); background:#ECFDF5; border:1px solid #BBF7D0; }
 
-        @media (max-width: 360px){
-          .row{ grid-template-columns: 1fr 100px; }
-          .input-slim{ height:34px; }
+        @media (max-width:360px){
+          .row{ grid-template-columns: 1fr 108px; }
           .logo{ width:62px; height:62px; }
+          .control{ height:42px; border-radius:14px; }
         }
       `}</style>
     </div>
